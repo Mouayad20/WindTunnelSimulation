@@ -5,12 +5,12 @@ using UnityEngine;
 
 public class Main : MonoBehaviour
 {
-    public List<GameObject> worldObjects;
-    public float gravity = -9.8f;
-
-    public Vector3 velocity;
+    public  List<GameObject> worldObjects;
+    public  float gravity = -9.8f;
+    public  Vector3 velocity;
+    public  bool coll = false;
     private Physics py;
-    bool coll = false;
+
     void Start()
     {
         py = new Physics(worldObjects);
@@ -21,7 +21,7 @@ public class Main : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // py.worldObjects[0].veclocity = velocity;
+        // py.worldObjects[0].velocity = velocity;
         if (!coll)
         {
             py.worldObjects[0].UpdateValues2(velocity);
@@ -33,7 +33,7 @@ public class Main : MonoBehaviour
         }
         if (coll)
         {
-
+            print(Parameters.FirstName);
             py.AfterCollision(py.worldObjects[0], py.worldObjects[1]);
         }
 
