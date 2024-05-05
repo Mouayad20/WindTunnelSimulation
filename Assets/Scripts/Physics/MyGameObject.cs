@@ -53,4 +53,6 @@ public class MyGameObject : MonoBehaviour
         //     Math.Pow(objects.obj.transform.position.y - obj.transform.position.y, 2) +
         //     Math.Pow(objects.obj.transform.position.z - obj.transform.position.z, 2));
     }
+
+    
 }
