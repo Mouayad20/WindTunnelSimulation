@@ -14,14 +14,12 @@ public class Main : MonoBehaviour
     void Start()
     {
         py = new Physics(worldObjects);
-        // py.worldObjects[0].veclocity = new Vector3(0, 1f, 0);
         velocity = new Vector3(0.01f, 0.001f, 0);
     }
 
     // Update is called once per frame
     void Update()
     {
-        // py.worldObjects[0].veclocity = velocity;
         if (!coll)
         {
             py.worldObjects[0].UpdateValues2(velocity);
