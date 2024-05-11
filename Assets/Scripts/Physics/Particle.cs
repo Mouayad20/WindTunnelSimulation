@@ -32,4 +32,17 @@ public class Particle : AbstractObject
         }
         return false;
     }
+
+    public void ChangeColor(Color color)
+    {
+        Renderer renderer = obj.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            renderer.material.color = color;
+        }
+        else
+        {
+            Debug.LogWarning("Renderer component not found on the GameObject.");
+        }
+    }
 }
