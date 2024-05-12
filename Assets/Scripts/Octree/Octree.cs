@@ -28,7 +28,7 @@ public class Octree
 
     public bool Insert(Particle particle){
 
-        if (!this.boundary.Contains(particle.GetObj().transform.position)){
+        if (!this.boundary.Contains(particle.location)){
             return false;
         }
         
@@ -80,7 +80,7 @@ public class Octree
         }
         else {
             foreach (Particle particle in this.particles){
-                if (region.Contains(particle.GetObj().transform.position)){
+                if (region.Contains(particle.location)){
                     foundedParticles.Add(particle);
                 }
             }

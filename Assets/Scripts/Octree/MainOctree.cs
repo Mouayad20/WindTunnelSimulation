@@ -18,7 +18,7 @@ public class MainOctree : MonoBehaviour
         boundary = new Bounds(Parameters.octreeCenter, new Vector3(Parameters.octreeWidth, Parameters.octreeHeight, Parameters.octreeDepth));
                 
         // for (int i = 0 ; i < Parameters.numberOfParticles ; i++){
-        //     particles.Add(new Particle(Instantiate(GameObject.CreatePrimitive(PrimitiveType.Sphere), new Vector3(0,10,0), Quaternion.identity)));
+        //      particles.Add(new Particle(new Vector3(Parameters.octreeCenter.x,Parameters.octreeHeight/2,Parameters.octreeCenter.z)));
         // }
 
         // region = new Bounds(boundary.center, boundary.size / 2f);
@@ -39,7 +39,7 @@ public class MainOctree : MonoBehaviour
             timer = 0f;
         }
 
-        particles.Add(new Particle(Instantiate(GameObject.CreatePrimitive(PrimitiveType.Sphere), new Vector3(0,10,0), Quaternion.identity)));
+        particles.Add(new Particle(new Vector3(Parameters.octreeCenter.x,Parameters.octreeHeight/2,Parameters.octreeCenter.z)));
 
         octree   = new Octree(boundary, Parameters.octreeCapacity);
 
@@ -50,7 +50,6 @@ public class MainOctree : MonoBehaviour
             particle.Move();
             if (particle.isDead())
             {
-                Destroy(particle.GetObj());
                 particles.RemoveAt(i);
             }
         }
@@ -82,7 +81,9 @@ public class MainOctree : MonoBehaviour
         if (Application.isPlaying)
         {
             octree.Draw();
-
+            foreach(Particle p in particles){
+                p.Draw();
+            }
             // Gizmos.color = new Color(1, 0, 0);
             // Gizmos.DrawWireCube(region.center, region.size);
         }

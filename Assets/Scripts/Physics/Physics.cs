@@ -13,7 +13,7 @@ public class Physics
     {
         foreach (GameObject i in objs)
         {
-            worldObjects.Add(new Particle(i));
+            worldObjects.Add(new Particle(i.transform.position));
         }
     }
 

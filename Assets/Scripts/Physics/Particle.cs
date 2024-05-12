@@ -7,14 +7,15 @@ public class Particle : AbstractObject
 {
     public float radius;
     public float lifespan;
+    public Vector3 location;
 
-    public Particle(GameObject gameObject)
+    public Particle(Vector3 location)
     {
-        this.obj = gameObject;
+        // this.obj = gameObject;
         this.acceleration = new Vector3(0, -0.05f, 0); 
         this.velocity = new Vector3(UnityEngine.Random.Range(-0.05f, 0.05f), 0.05f, UnityEngine.Random.Range(-0.05f, 0.05f));
         this.lifespan = 255;
-        this.ChangeColor(new Color(1,0,0));
+        this.location = location;
     }
 
     public void UpdateValues2(Vector3 vel)
@@ -61,16 +62,15 @@ public class Particle : AbstractObject
     }
 
     public void Move(){
-        float randomX = UnityEngine.Random.Range(-0.9f,  0.9f); 
-        float randomY = UnityEngine.Random.Range(-0.6f, -0.1f); 
-        float randomZ = UnityEngine.Random.Range(-0.9f,  0.9f); 
+        float randomX = UnityEngine.Random.Range(-2.5f, 2.5f); 
+        float randomY = UnityEngine.Random.Range(-1f  ,  0  ); 
+        float randomZ = UnityEngine.Random.Range(-2.5f, 2.5f); 
 
         Vector3 randomAcceleration = new Vector3(randomX, randomY, randomZ);
 
         this.velocity += randomAcceleration * Time.deltaTime;
-        this.obj.transform.position += this.velocity * Time.deltaTime;
-        this.lifespan -= 0.5f;
-        
+        this.location += this.velocity * Time.deltaTime;
+        this.lifespan -= 0.35f;
     }
 
     public bool isDead(){
@@ -78,5 +78,10 @@ public class Particle : AbstractObject
             return true;
         else
             return false;
+    }
+
+    public void Draw(){
+        Gizmos.color = new Color(1,0,0,this.lifespan/100f);
+        Gizmos.DrawSphere(this.location, 0.5f);
     }
 }
