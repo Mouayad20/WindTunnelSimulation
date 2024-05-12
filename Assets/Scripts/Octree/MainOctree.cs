@@ -11,30 +11,18 @@ public class MainOctree : MonoBehaviour
 
     private float timer = 0f;
     private float refreshRate = 0.5f;
-    Bounds boundary;
+    private Bounds boundary;
 
     void Start()
     {
         boundary = new Bounds(Parameters.octreeCenter, new Vector3(Parameters.octreeWidth, Parameters.octreeHeight, Parameters.octreeDepth));
-        GameObject particlePrefab = GameObject.CreatePrimitive(PrimitiveType.Sphere); 
-        particlePrefab.transform.localScale = Vector3.one * 0.5f;
-
-        for (int i = 0 ; i < Parameters.numberOfParticles ; i++){
-            Vector3 randomPosition = new Vector3(
-                Random.Range(boundary.min.x, boundary.max.x),
-                Random.Range(boundary.min.y, boundary.max.y),
-                Random.Range(boundary.min.z, boundary.max.z)
-            );
-
-            GameObject sphere = Instantiate(particlePrefab, randomPosition, Quaternion.identity);
-            Particle particle = new Particle(sphere);
-            particles.Add(particle);     
-        }
+                
+        // for (int i = 0 ; i < Parameters.numberOfParticles ; i++){
+        //     particles.Add(new Particle(Instantiate(GameObject.CreatePrimitive(PrimitiveType.Sphere), new Vector3(0,10,0), Quaternion.identity)));
+        // }
 
         // region = new Bounds(boundary.center, boundary.size / 2f);
-
         // List<Particle> foundedParticles = octree.query(region);
-
         // foreach (Particle particle in foundedParticles){
         //     particle.ChangeColor(new Color(0,0,1));
         // }
@@ -51,22 +39,31 @@ public class MainOctree : MonoBehaviour
             timer = 0f;
         }
 
+        particles.Add(new Particle(Instantiate(GameObject.CreatePrimitive(PrimitiveType.Sphere), new Vector3(0,10,0), Quaternion.identity)));
+
         octree   = new Octree(boundary, Parameters.octreeCapacity);
 
-        foreach (Particle particle in particles){
+        for (int i = 0 ; i < particles.Count; i++)
+        {
+            Particle particle = particles[i];
             octree.Insert(particle);  
             particle.Move();
+            if (particle.isDead())
+            {
+                Destroy(particle.GetObj());
+                particles.RemoveAt(i);
+            }
         }
 
         // without Octree -> frameRate = 3 
-        foreach (Particle particle in particles){
-            foreach (Particle other in particles){
-                if(   particle.GetObj().transform.position != other.GetObj().transform.position 
-                    && (Vector3.Distance(particle.GetObj().transform.position, other.GetObj().transform.position) < 1)
-                   )
-                    particle.ChangeColor(new Color(0,0,1));
-            }
-        }
+        // foreach (Particle particle in particles){
+        //     foreach (Particle other in particles){
+        //         if(   particle.GetObj().transform.position != other.GetObj().transform.position 
+        //             && (Vector3.Distance(particle.GetObj().transform.position, other.GetObj().transform.position) < 1)
+        //            )
+        //             particle.ChangeColor(new Color(0,0,1));
+        //     }
+        // }
 
         // without Octree -> frameRate = 17  
         // foreach (Particle particle in particles){
