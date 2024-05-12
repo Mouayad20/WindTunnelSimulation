@@ -45,4 +45,13 @@ public class Particle : AbstractObject
             Debug.LogWarning("Renderer component not found on the GameObject.");
         }
     }
+
+    public void Move(){
+        Vector3 randomOffset = new Vector3(
+            UnityEngine.Random.Range(-0.01f, 0.01f),
+            UnityEngine.Random.Range(-0.01f, 0.01f),
+            UnityEngine.Random.Range(-0.01f, 0.01f)
+        );
+        this.GetObj().transform.position += randomOffset;  
+    }
 }
