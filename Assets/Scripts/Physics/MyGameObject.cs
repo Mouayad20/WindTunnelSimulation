@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Numerics;
 using UnityEngine;
 
-public class MyGameObject : MonoBehaviour
+public class MyGameObject : MonoBehaviour /// sphare
 {
     public UnityEngine.GameObject obj;
 
-    public float radius;
+    public float radius = 5;
     public float mass = 20;
     public UnityEngine.Vector3 veclocity; // vector
     public UnityEngine.Vector3 acceleration; // vector
@@ -16,14 +16,6 @@ public class MyGameObject : MonoBehaviour
     {
         obj = objec;
     }
-
-    public void UpdateValues2(UnityEngine.Vector3 vel)
-    {
-        // acceleration += force / mass;
-        veclocity = vel; ;
-        obj.transform.position += veclocity;
-    }
-
 
     public void UpdateValues(UnityEngine.Vector3 force, float dt)
     {
@@ -37,20 +29,14 @@ public class MyGameObject : MonoBehaviour
         acceleration = new UnityEngine.Vector3(0, 0, 0);
         veclocity = new UnityEngine.Vector3(0, 0, 0);
     }
-
-
-
-    public bool DetectCollision(MyGameObject objects)
+    public bool HandleCollision(MyGameObject o)
     {
-        if (Math.Sqrt(Math.Pow(objects.obj.transform.position.x - obj.transform.position.x, 2) +
-            Math.Pow(objects.obj.transform.position.y - obj.transform.position.y, 2) +
-            Math.Pow(objects.obj.transform.position.z - obj.transform.position.z, 2)) <= 10)
+        if (Math.Sqrt(Math.Pow(o.obj.transform.position.x - this.obj.transform.position.x, 2) +
+            Math.Pow(o.obj.transform.position.y - this.obj.transform.position.y, 2) +
+            Math.Pow(o.obj.transform.position.z - this.obj.transform.position.z, 2)) <= 2 * this.radius)
         {
             return true;
         }
         return false;
-        // return Math.Sqrt(Math.Pow(objects.obj.transform.position.x - obj.transform.position.x, 2) +
-        //     Math.Pow(objects.obj.transform.position.y - obj.transform.position.y, 2) +
-        //     Math.Pow(objects.obj.transform.position.z - obj.transform.position.z, 2));
     }
 }

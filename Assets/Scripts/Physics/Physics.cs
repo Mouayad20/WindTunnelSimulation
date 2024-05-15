@@ -8,6 +8,7 @@ using UnityEngine;
 public class Physics
 {
     public List<MyGameObject> worldObjects = new();
+    public float dt = 0.01f;
 
     public Physics(List<GameObject> objs)
     {
@@ -17,40 +18,57 @@ public class Physics
         }
 
     }
+
+    public void ApplyVelocity(UnityEngine.Vector3 velocity, MyGameObject obj, bool inverse)
+    {
+        obj.veclocity += velocity * dt;
+        if (!inverse)
+        {
+            obj.obj.transform.position += obj.veclocity;
+        }
+        else
+        {
+            obj.obj.transform.position -= obj.veclocity;
+        }
+    }
+    public void ApplyForce(UnityEngine.Vector3 force, MyGameObject obj)
+    {
+
+        // foreach (MyGameObject i in worldObjects)
+        // {
+        //     i.UpdateValues(force, 0.01f);
+        // }
+        obj.UpdateValues(force, dt);
+    }
+
     public void ApplyGravity(float gravity)
     {
-
         foreach (MyGameObject i in worldObjects)
         {
-            // ApplyForce(new Vector3(0, -i.mass * gravity, 0));
-            ApplyForce(new Vector3(0, -0.0098f, 0));
+            ApplyForce(new Vector3(0, -gravity, 0), i);
         }
-
-
     }
 
-    public void ApplyForce(UnityEngine.Vector3 force)
-    {
 
-        foreach (MyGameObject i in worldObjects)
+    public void HandleCollision(MyGameObject obj1, MyGameObject obj2)
+    {
+        MeshClass meshClass = obj2.obj.GetComponent<MeshClass>();
+        if (meshClass != null)
         {
-            i.UpdateValues(force, 0.01f);
+            foreach (Triangles triangle in meshClass.meshTriangles)
+            {
+                // Debug.Log(triangle);
+                if (triangle.PointTriangle(obj1.obj.transform.position, obj1.radius))
+                {
+                    // Debug.Log("collision");
+                    // return true;
+                }
+            }
         }
-
-    }
-
-    public void ApplyObjectForce(UnityEngine.Vector3 force, MyGameObject obj)
-    {
-
-
-        obj.UpdateValues(force, 0.01f);
-
-
     }
 
     public bool AfterCollision(MyGameObject obj1, MyGameObject obj2)
     {
-
         obj1.mass = 2;
         obj2.mass = 2;
         Vector3 newVelocityObj1 = ((obj1.mass - obj2.mass) / (obj1.mass + obj2.mass)) * (obj1.veclocity) +
@@ -70,9 +88,11 @@ public class Physics
 
         // obj1.EmptyValues();
 
-        obj1.UpdateValues2(newVelocityObj1);
+        // obj1.UpdateValues2(newVelocityObj1);
         // obj2.EmptyValues();
-        obj2.UpdateValues2(newVelocityObj2);
+        // obj2.UpdateValues2(newVelocityObj2);
         return true;
     }
+
+
 }
