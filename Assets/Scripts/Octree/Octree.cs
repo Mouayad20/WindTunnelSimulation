@@ -6,7 +6,7 @@ public class Octree
 {
     private Bounds boundary;
     private int    capacity;
-    private List<Particle> particles;
+    private List<AbstractObject> dataObjects;
     private bool   isDivided;
 
     private Octree child1;
@@ -22,32 +22,32 @@ public class Octree
     {
         this.boundary  = boundary;
         this.capacity  = capacity;
-        this.particles = new List<Particle>();
+        this.dataObjects = new List<AbstractObject>();
         this.isDivided = false;
     }
 
-    public bool Insert(Particle particle){
+    public bool Insert(AbstractObject abstractObject){
 
-        if (!this.boundary.Contains(particle.location)){
+        if (!this.boundary.Contains(abstractObject.GetLocation())){
             return false;
         }
         
-        if (this.particles.Count < this.capacity){
-            this.particles.Add(particle);
+        if (this.dataObjects.Count < this.capacity){
+            this.dataObjects.Add(abstractObject);
             return true;
         }
         else {
             if ( !isDivided ){
                 this.Divide();
             }
-            if (this.child1.Insert(particle)) return true ;
-            else if (this.child2.Insert(particle)) return true ;
-            else if (this.child3.Insert(particle)) return true ;
-            else if (this.child4.Insert(particle)) return true ;
-            else if (this.child5.Insert(particle)) return true ;
-            else if (this.child6.Insert(particle)) return true ;
-            else if (this.child7.Insert(particle)) return true ;
-            else if (this.child8.Insert(particle)) return true ;
+            if (this.child1.Insert(abstractObject)) return true ;
+            else if (this.child2.Insert(abstractObject)) return true ;
+            else if (this.child3.Insert(abstractObject)) return true ;
+            else if (this.child4.Insert(abstractObject)) return true ;
+            else if (this.child5.Insert(abstractObject)) return true ;
+            else if (this.child6.Insert(abstractObject)) return true ;
+            else if (this.child7.Insert(abstractObject)) return true ;
+            else if (this.child8.Insert(abstractObject)) return true ;
             else return false;
         }
     }
@@ -73,30 +73,30 @@ public class Octree
         this.isDivided = true;
     }
 
-    public List<Particle> query(Bounds region){
-        List<Particle> foundedParticles = new List<Particle>();
+    public List<AbstractObject> query(Bounds region){
+        List<AbstractObject> foundedObjects = new List<AbstractObject>();
         if (!this.boundary.Intersects(region)){
-            return foundedParticles;
+            return foundedObjects;
         }
         else {
-            foreach (Particle particle in this.particles){
-                if (region.Contains(particle.location)){
-                    foundedParticles.Add(particle);
+            foreach (AbstractObject abstractObject in this.dataObjects){
+                if (region.Contains(abstractObject.GetLocation())){
+                    foundedObjects.Add(abstractObject);
                 }
             }
 
             if(this.isDivided){
-                foundedParticles.AddRange(this.child1.query(region));
-                foundedParticles.AddRange(this.child2.query(region));
-                foundedParticles.AddRange(this.child3.query(region));
-                foundedParticles.AddRange(this.child4.query(region));
-                foundedParticles.AddRange(this.child5.query(region));
-                foundedParticles.AddRange(this.child6.query(region));
-                foundedParticles.AddRange(this.child7.query(region));
-                foundedParticles.AddRange(this.child8.query(region));
+                foundedObjects.AddRange(this.child1.query(region));
+                foundedObjects.AddRange(this.child2.query(region));
+                foundedObjects.AddRange(this.child3.query(region));
+                foundedObjects.AddRange(this.child4.query(region));
+                foundedObjects.AddRange(this.child5.query(region));
+                foundedObjects.AddRange(this.child6.query(region));
+                foundedObjects.AddRange(this.child7.query(region));
+                foundedObjects.AddRange(this.child8.query(region));
             }
 
-            return foundedParticles;
+            return foundedObjects;
         }
     }
 

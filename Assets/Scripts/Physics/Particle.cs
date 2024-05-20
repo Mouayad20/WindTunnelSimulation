@@ -7,7 +7,6 @@ public class Particle : AbstractObject
 {
 	public float radius;
 	public float lifespan;
-	public Vector3 location;
 	public Color color;
 
 	public Particle(Vector3 location)
