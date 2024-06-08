@@ -5,7 +5,7 @@ public class Parameters
     public const string FirstName = "Mouayad Kadoora";
     public const int numberOfParticles = 1000;
     public const int octreeCapacity = 4;
-    public const int carOctreeCapacity = 1;
+    public const int carOctreeCapacity = 50;
     public const float octreeWidth  = 10f;
     public const float octreeHeight = 2f;
     public const float octreeDepth  = 2.5f;

@@ -12,11 +12,11 @@ public class Particle : AbstractObject
 	public Particle(Vector3 location)
 	{
 		// this.obj = gameObject;
-		this.acceleration = new Vector3(0, -0.05f, 0); 
+		this.acceleration = new Vector3(0, -0.05f, 0);
 		this.velocity = new Vector3(UnityEngine.Random.Range(-0.05f, 0.05f), 0.05f, UnityEngine.Random.Range(-0.05f, 0.05f));
 		this.lifespan = 255;
 		this.location = location;
-		this.color = new Color(0f,0.5f,1f);
+		this.color = new Color(0f, 0.5f, 1f);
 	}
 
 	public void UpdateValues2(Vector3 vel)
@@ -42,49 +42,49 @@ public class Particle : AbstractObject
 
 	public void ChangeColor(Color color)
 	{
-		Renderer renderer = obj.GetComponent<Renderer>();
-		if (renderer != null)
-		{
-			renderer.material.color = color;
-		}
-		else
-		{
-			Debug.LogWarning("Renderer component not found on the GameObject.");
-		}
+		this.color = color;
 	}
 
-	public void MoveRandomly(){
+	public void MoveRandomly()
+	{
 		Vector3 randomOffset = new Vector3(
 			UnityEngine.Random.Range(-0.01f, 0.01f),
 			UnityEngine.Random.Range(-0.01f, 0.01f),
 			UnityEngine.Random.Range(-0.01f, 0.01f)
 		);
-		this.GetObj().transform.position += randomOffset;  
+		this.GetObj().transform.position += randomOffset;
 	}
 
-	public void Move(){
-		float randomX = UnityEngine.Random.Range(-1f,  0f); 
-		float randomY = UnityEngine.Random.Range(-1f  ,  0  ); 
-		float randomZ = UnityEngine.Random.Range(-0.5f  , 0.5f); 
+	public void Move()
+	{
+		float randomX = UnityEngine.Random.Range(-1f, 0f);
+		float randomY = UnityEngine.Random.Range(-1f, 0);
+		float randomZ = UnityEngine.Random.Range(-0.5f, 0.5f);
 
 		Vector3 randomAcceleration = new Vector3(randomX, 0, randomZ);
 
 		this.velocity += randomAcceleration * Time.deltaTime;
 		this.location += this.velocity * Time.deltaTime;
-		this.lifespan -= 0.6f;
-		this.color = new Color(0f,1f,1f,this.lifespan/255f);
+		this.lifespan -= 1f;
+		this.color = new Color(0f, 1f, 1f, this.lifespan / 255f);
 	}
 
 	public bool isDead()
 	{
-		if(this.lifespan <=0)
+		if (this.lifespan <= 0)
 			return true;
 		else
 			return false;
 	}
 
-	public void Draw(){
+	public void Draw()
+	{
 		Gizmos.color = this.color;
 		Gizmos.DrawSphere(this.location, 0.1f);
+	}
+
+	public Bounds getRejoinAround()
+	{
+		return new Bounds(this.location, new Vector3(0.5f, 0.5f, 0.5f));
 	}
 }
