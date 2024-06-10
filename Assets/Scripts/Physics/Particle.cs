@@ -64,9 +64,9 @@ public class Particle : AbstractObject
 				// 	this.location.z + Parameters.particleRedius
 				// );
 				float distance = Vector3.Distance(this.location, q);
-				if (distance <= 0.1)
+				if (distance <= 0.15f)
 				{
-					this.location += normal * 0.03f;
+					this.location += normal * 0.04f;
 					return true;
 				}
 

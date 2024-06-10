@@ -7,9 +7,12 @@ public class MainOctree : MonoBehaviour
 	Octree octree;
 	Octree carOctree;
 	Bounds region;
+	// Pyramid pyramid;
+
 
 	List<Particle> particles = new List<Particle>();
-	List<Particle> inRegionParticles = new List<Particle>();
+
+	List<Particle> inRegionParticels = new List<Particle>();
 
 	private float timer = 0f;
 	private float refreshRate = 0.5f;
@@ -20,6 +23,7 @@ public class MainOctree : MonoBehaviour
 		region = new Bounds(Parameters.carCenter, new Vector3(Parameters.carWidth, Parameters.carHeight, Parameters.carDepth));
 		boundary = new Bounds(Parameters.octreeCenter, new Vector3(Parameters.octreeWidth, Parameters.octreeHeight, Parameters.octreeDepth));
 		carOctree = new Octree(region, Parameters.carOctreeCapacity);
+		// pyramid = new Pyramid(Vector3.zero, 0.75f, 0.75f);
 
 		GameObject model = GameObject.Find("Car");
 
@@ -58,8 +62,9 @@ public class MainOctree : MonoBehaviour
 			Debug.LogError("Model not found in the scene. Make sure the name is correct.");
 		}
 
-		// for (int i = 0 ; i < Parameters.numberOfParticles ; i++){
-		// 	particles.Add(new Particle(new Vector3(Parameters.octreeWidth/2,UnityEngine.Random.Range(0,2f),UnityEngine.Random.Range(-1f,1f))));
+		// for (int i = 0; i < Parameters.numberOfParticles; i++)
+		// {
+		// 	particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 2f), UnityEngine.Random.Range(-1f, 1f))));
 		// }
 
 	}
@@ -74,40 +79,36 @@ public class MainOctree : MonoBehaviour
 
 		for (int i = 0; i < particles.Count; i++)
 		{
-			// Particle particle = particles[i];
 
 			octree.Insert(particles[i]);
 
 			if (particles[i].color == Color.red)
 			{
-				particles[i].MoveToLastPoint();
-				// particles[i].Move();
+				particles[i].Move();
 			}
 			else
 			{
 				particles[i].Move();
 			}
 
-
 			if (region.Contains(particles[i].GetLocation()))
 			{
 				List<AbstractObject> triangles = carOctree.query(particles[i].getRejoinAround());
-				// print("triangles.Count : " + triangles.Count);
 				foreach (Triangle triangle in triangles)
 				{
 					if (particles[i].DetectCollision(triangle))
 					{
-						inRegionParticles.Add(particles[i]);
+						inRegionParticels.Add(particles[i]);
 						break;
 					}
 				}
+
 			}
-			else if (inRegionParticles.Contains(particles[i]))
+			else if (inRegionParticels.Contains(particles[i]))
 			{
 				//Debug.Log("hahahahaha");
-				//inRegionParticles.Remove(particle);
+				//inRegionParticels.Remove(particle);
 			}
-			print("size : " + particles.Count);
 			if (particles[i].isDead())
 			{
 				particles.RemoveAt(i);
@@ -119,7 +120,7 @@ public class MainOctree : MonoBehaviour
 	{
 		if (Application.isPlaying)
 		{
-			foreach (Particle particle in inRegionParticles)
+			foreach (Particle particle in inRegionParticels)
 			{
 
 				particle.color = Color.red;
@@ -133,6 +134,7 @@ public class MainOctree : MonoBehaviour
 			}
 			Gizmos.color = new Color(1, 0, 0);
 			Gizmos.DrawWireCube(region.center, region.size);
+			// pyramid.Draw();
 		}
 	}
 
@@ -142,7 +144,7 @@ public class MainOctree : MonoBehaviour
 		if (timer >= refreshRate)
 		{
 			float fps = 1f / Time.deltaTime;
-			Debug.Log("Frame Rate: " + fps.ToString("F0"));
+			// Debug.Log("Frame Rate: " + fps.ToString("F0"));
 			timer = 0f;
 		}
 	}
