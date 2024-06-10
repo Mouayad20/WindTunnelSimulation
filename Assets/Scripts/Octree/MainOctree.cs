@@ -9,6 +9,7 @@ public class MainOctree : MonoBehaviour
 	Bounds region;
 
 	List<Particle> particles = new List<Particle>();
+	List<Particle> inRegionParticles = new List<Particle>();
 
 	private float timer = 0f;
 	private float refreshRate = 0.5f;
@@ -16,10 +17,11 @@ public class MainOctree : MonoBehaviour
 
 	void Start()
 	{
+		region = new Bounds(Parameters.carCenter, new Vector3(Parameters.carWidth, Parameters.carHeight, Parameters.carDepth));
+		boundary = new Bounds(Parameters.octreeCenter, new Vector3(Parameters.octreeWidth, Parameters.octreeHeight, Parameters.octreeDepth));
+		carOctree = new Octree(region, Parameters.carOctreeCapacity);
 
 		GameObject model = GameObject.Find("Car");
-		region   = new Bounds(Parameters.carCenter, new Vector3(Parameters.carWidth, Parameters.carHeight, Parameters.carDepth));
-		boundary = new Bounds(Parameters.octreeCenter, new Vector3(Parameters.octreeWidth, Parameters.octreeHeight, Parameters.octreeDepth));
 
 		if (model != null)
 		{
@@ -31,8 +33,6 @@ public class MainOctree : MonoBehaviour
 
 				Vector3[] vertices = mesh.vertices;
 				int[] triangles = mesh.triangles;
-
-				carOctree = new Octree(region, Parameters.carOctreeCapacity);
 
 				Transform transform = model.transform;
 
@@ -67,10 +67,6 @@ public class MainOctree : MonoBehaviour
 	void Update()
 	{
 		PrintFrameRate();
-
-		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-1f, 1f))));
-		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-1f, 1f))));
-		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-1f, 1f))));
 		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-1f, 1f))));
 		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-1f, 1f))));
 
@@ -78,35 +74,59 @@ public class MainOctree : MonoBehaviour
 
 		for (int i = 0; i < particles.Count; i++)
 		{
-			Particle particle = particles[i];
-			octree.Insert(particle);
-			particle.Move();
-			if (region.Contains(particle.GetLocation()))
+			// Particle particle = particles[i];
+
+			octree.Insert(particles[i]);
+
+			if (particles[i].color == Color.red)
 			{
-				List<AbstractObject> triangles = carOctree.query(particle.getRejoinAround());
-				print("triangles.Count : " + triangles.Count);
-				foreach (Triangle triangle in triangles )
+				particles[i].MoveToLastPoint();
+				// particles[i].Move();
+			}
+			else
+			{
+				particles[i].Move();
+			}
+
+
+			if (region.Contains(particles[i].GetLocation()))
+			{
+				List<AbstractObject> triangles = carOctree.query(particles[i].getRejoinAround());
+				// print("triangles.Count : " + triangles.Count);
+				foreach (Triangle triangle in triangles)
 				{
-					if (triangle.IsPointNear(particle.GetLocation(), 0.00001f)) ;
+					if (particles[i].DetectCollision(triangle))
 					{
-						particle.ChangeColor(Color.black);
+						inRegionParticles.Add(particles[i]);
+						break;
 					}
 				}
 			}
-			if (particle.isDead())
+			else if (inRegionParticles.Contains(particles[i]))
+			{
+				//Debug.Log("hahahahaha");
+				//inRegionParticles.Remove(particle);
+			}
+			print("size : " + particles.Count);
+			if (particles[i].isDead())
 			{
 				particles.RemoveAt(i);
 			}
 		}
-
 	}
 
 	void OnDrawGizmos()
 	{
 		if (Application.isPlaying)
 		{
-			carOctree.Draw();
-			octree.Draw();
+			foreach (Particle particle in inRegionParticles)
+			{
+
+				particle.color = Color.red;
+
+			}
+			//carOctree.Draw();
+			// octree.Draw();
 			foreach (Particle p in particles)
 			{
 				p.Draw();
