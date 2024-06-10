@@ -17,6 +17,7 @@ public class MainOctree : MonoBehaviour
 	private float timer = 0f;
 	private float refreshRate = 0.5f;
 	private Bounds boundary;
+	private bool showShapes = false ;
 
 	void Start()
 	{
@@ -72,6 +73,12 @@ public class MainOctree : MonoBehaviour
 	void Update()
 	{
 		PrintFrameRate();
+		if (Input.GetKeyDown("space"))
+		{
+			Debug.Log("space key was pressed");
+			showShapes = !showShapes;
+		}
+
 		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-1f, 1f))));
 		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-1f, 1f))));
 
@@ -120,21 +127,22 @@ public class MainOctree : MonoBehaviour
 	{
 		if (Application.isPlaying)
 		{
-			foreach (Particle particle in inRegionParticels)
-			{
-
+			foreach (Particle particle in inRegionParticels){
+			
 				particle.color = Color.red;
-
 			}
-			//carOctree.Draw();
-			// octree.Draw();
 			foreach (Particle p in particles)
 			{
 				p.Draw();
 			}
-			Gizmos.color = new Color(1, 0, 0);
-			Gizmos.DrawWireCube(region.center, region.size);
-			// pyramid.Draw();
+			if(showShapes)
+			{
+				carOctree.Draw();
+				octree.Draw();
+				Gizmos.color = new Color(1, 0, 0);
+				Gizmos.DrawWireCube(region.center, region.size);
+				// pyramid.Draw();
+			}
 		}
 	}
 
@@ -148,4 +156,5 @@ public class MainOctree : MonoBehaviour
 			timer = 0f;
 		}
 	}
+	
 }
