@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MainOctree : MonoBehaviour
@@ -12,21 +13,36 @@ public class MainOctree : MonoBehaviour
 
 	List<Particle> particles = new List<Particle>();
 
+	/// new 
+	public List<GameObject> worldObjects;
+
 	List<Particle> inRegionParticels = new List<Particle>();
 
 	private float timer = 0f;
 	private float refreshRate = 0.5f;
 	private Bounds boundary;
-	private bool showShapes = false ;
+	private bool showShapes = false;
+
+	GameObject model;
+
+
 
 	void Start()
 	{
+
+		model = GameObject.Find("Car");
+
+		// for malaz pc
+		// Parameters.carCenter = new Vector3(model.transform.position.x, model.transform.position.y + 0.5f, model.transform.position.z);
+
+		Parameters.carCenter = new Vector3(model.transform.position.x, model.transform.position.y, model.transform.position.z);
+
 		region = new Bounds(Parameters.carCenter, new Vector3(Parameters.carWidth, Parameters.carHeight, Parameters.carDepth));
 		boundary = new Bounds(Parameters.octreeCenter, new Vector3(Parameters.octreeWidth, Parameters.octreeHeight, Parameters.octreeDepth));
 		carOctree = new Octree(region, Parameters.carOctreeCapacity);
 		// pyramid = new Pyramid(Vector3.zero, 0.75f, 0.75f);
 
-		GameObject model = GameObject.Find("Car");
+
 
 		if (model != null)
 		{
@@ -72,15 +88,30 @@ public class MainOctree : MonoBehaviour
 
 	void Update()
 	{
+
+
+
+
 		PrintFrameRate();
+
 		if (Input.GetKeyDown("space"))
 		{
-			Debug.Log("space key was pressed");
 			showShapes = !showShapes;
 		}
 
-		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-1f, 1f))));
-		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-1f, 1f))));
+		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
+		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
+
+		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
+		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
+
+		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
+		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
+
+		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
+		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
+
+
 
 		octree = new Octree(boundary, Parameters.octreeCapacity);
 
@@ -91,7 +122,11 @@ public class MainOctree : MonoBehaviour
 
 			if (particles[i].color == Color.red)
 			{
-				particles[i].Move();
+				// particles[i].Move();
+				particles[i].MoveToLastPoint(model);
+
+
+
 			}
 			else
 			{
@@ -118,7 +153,9 @@ public class MainOctree : MonoBehaviour
 			}
 			if (particles[i].isDead())
 			{
+
 				particles.RemoveAt(i);
+
 			}
 		}
 	}
@@ -127,22 +164,26 @@ public class MainOctree : MonoBehaviour
 	{
 		if (Application.isPlaying)
 		{
-			foreach (Particle particle in inRegionParticels){
-			
+			foreach (Particle particle in inRegionParticels)
+			{
+
+
 				particle.color = Color.red;
+
 			}
 			foreach (Particle p in particles)
 			{
 				p.Draw();
 			}
-			if(showShapes)
+			if (showShapes)
 			{
-				carOctree.Draw();
-				octree.Draw();
 				Gizmos.color = new Color(1, 0, 0);
 				Gizmos.DrawWireCube(region.center, region.size);
+				carOctree.Draw();
+				octree.Draw();
 				// pyramid.Draw();
 			}
+
 		}
 	}
 
@@ -156,5 +197,4 @@ public class MainOctree : MonoBehaviour
 			timer = 0f;
 		}
 	}
-	
 }

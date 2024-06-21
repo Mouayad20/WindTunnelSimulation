@@ -2,12 +2,19 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 public class Particle : AbstractObject
 {
 	public float radius;
 	public float lifespan;
 	public Color color;
+
+	/// new
+	private List<Vector3> pathHistory = new List<Vector3>();
+
+	/// new
+	private Material particleMaterial = new Material(Shader.Find("Custom/LineShader"));
 
 	public Particle(Vector3 location)
 	{
@@ -16,7 +23,17 @@ public class Particle : AbstractObject
 		this.velocity = new Vector3(UnityEngine.Random.Range(-0.05f, 0.05f), 0.05f, UnityEngine.Random.Range(-0.05f, 0.05f));
 		this.lifespan = 255;
 		this.location = location;
-		this.color = new Color(0f, 0.5f, 1f);
+		this.color = new Color(0f, 0f, 0f).WithAlpha(0.4f);
+
+		/// new 
+		// Shader lineShader = Shader.Find("Custom/LineShader");
+
+		// if (lineShader == null)
+		// {
+		// 	Debug.LogError("Shader not found! Make sure the shader file is named correctly and placed in the project.");
+		// }
+		// this.particleMaterial = new Material(lineShader);
+
 	}
 
 	public void UpdateValues2(Vector3 vel)
@@ -26,11 +43,19 @@ public class Particle : AbstractObject
 		this.location += velocity;
 	}
 
-	public void MoveToLastPoint()
+	public void MoveToLastPoint(GameObject model)
 	{
 		// acceleration += force / mass;
-		this.location += (new Vector3(-5.3f, 0.82f, -0.42f) - this.location).normalized * 0.03f;
+		// on malaz pc
+		//this.location += (new Vector3(-4.822f, model.transform.position.y + 0.5f, UnityEngine.Random.Range(-2f, 2f)) - this.location).normalized * 0.03f;
 
+		// on others
+		this.location += (new Vector3(-4.822f, model.transform.position.y, UnityEngine.Random.Range(-2f, 2f)) - this.location).normalized * 0.03f;
+		pathHistory.Add(this.location);
+		if (pathHistory.Count > 50) // Limit the history size
+		{
+			pathHistory.RemoveAt(0);
+		}
 	}
 
 
@@ -64,7 +89,7 @@ public class Particle : AbstractObject
 				// 	this.location.z + Parameters.particleRedius
 				// );
 				float distance = Vector3.Distance(this.location, q);
-				if (distance <= 0.15f)
+				if (distance <= 0.1f)
 				{
 					this.location += normal * 0.04f;
 					return true;
@@ -104,12 +129,19 @@ public class Particle : AbstractObject
 		this.velocity += randomAcceleration * Time.deltaTime;
 		this.location += this.velocity * Time.deltaTime;
 		this.lifespan -= 0.1f;
-		this.color = new Color(0f, 1f, 1f, this.lifespan / 255f);
+		this.color = new Color(255f, 255f, 255f, this.lifespan / 255f).WithAlpha(0.4f);
+
+		pathHistory.Add(this.location);
+		if (pathHistory.Count > 50) // Limit the history size
+		{
+			pathHistory.RemoveAt(0);
+		}
 	}
 
 	public bool isDead()
 	{
-		if (this.lifespan <= 0)
+		// if (this.lifespan <= 0)
+		if (this.location.x <= -4.822f)
 			return true;
 		else
 			return false;
@@ -117,8 +149,15 @@ public class Particle : AbstractObject
 
 	public void Draw()
 	{
-		Gizmos.color = this.color;
-		Gizmos.DrawSphere(this.location, Parameters.particleRedius);
+		// Gizmos.color = this.color;
+		// Gizmos.DrawSphere(this.location, Parameters.particleRedius);
+
+		/// new 
+		for (int i = 0; i < pathHistory.Count - 1; i++)
+		{
+			Gizmos.color = color;
+			Gizmos.DrawLine(pathHistory[i], pathHistory[i + 1]);
+		}
 	}
 
 	public Bounds getRejoinAround()
