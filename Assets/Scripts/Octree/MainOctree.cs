@@ -25,21 +25,15 @@ public class MainOctree : MonoBehaviour
 
 	GameObject model;
 
-
-
 	void Start()
 	{
-
 		model = GameObject.Find("Car");
-
 		// for malaz pc
-		// Parameters.carCenter = new Vector3(model.transform.position.x, model.transform.position.y + 0.5f, model.transform.position.z);
+		Parameters.carCenter = new Vector3(model.transform.position.x, model.transform.position.y + 0.5f, model.transform.position.z);
 
-		Parameters.carCenter = new Vector3(model.transform.position.x, model.transform.position.y, model.transform.position.z);
+		// Parameters.carCenter = new Vector3(model.transform.position.x, model.transform.position.y, model.transform.position.z);
 
-		region = new Bounds(Parameters.carCenter, new Vector3(Parameters.carWidth, Parameters.carHeight, Parameters.carDepth));
 		boundary = new Bounds(Parameters.octreeCenter, new Vector3(Parameters.octreeWidth, Parameters.octreeHeight, Parameters.octreeDepth));
-		carOctree = new Octree(region, Parameters.carOctreeCapacity);
 		// pyramid = new Pyramid(Vector3.zero, 0.75f, 0.75f);
 
 
@@ -56,6 +50,9 @@ public class MainOctree : MonoBehaviour
 				int[] triangles = mesh.triangles;
 
 				Transform transform = model.transform;
+				Bounds localBounds = mesh.bounds;
+				region = TransformBounds(transform, localBounds);
+				carOctree = new Octree(region, Parameters.carOctreeCapacity);
 
 				for (int i = 0; i < triangles.Length; i += 3)
 				{
@@ -88,10 +85,6 @@ public class MainOctree : MonoBehaviour
 
 	void Update()
 	{
-
-
-
-
 		PrintFrameRate();
 
 		if (Input.GetKeyDown("space"))
@@ -100,17 +93,7 @@ public class MainOctree : MonoBehaviour
 		}
 
 		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
-		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
-
-		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
-		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
-
-		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
-		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
-
-		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
-		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
-
+		// particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
 
 
 		octree = new Octree(boundary, Parameters.octreeCapacity);
@@ -124,9 +107,6 @@ public class MainOctree : MonoBehaviour
 			{
 				// particles[i].Move();
 				particles[i].MoveToLastPoint(model);
-
-
-
 			}
 			else
 			{
@@ -196,5 +176,37 @@ public class MainOctree : MonoBehaviour
 			// Debug.Log("Frame Rate: " + fps.ToString("F0"));
 			timer = 0f;
 		}
+	}
+	
+	private Bounds TransformBounds(Transform transform, Bounds localBounds)
+	{
+		// Transform the center to world space
+		Vector3 center = transform.TransformPoint(localBounds.center);
+
+		// Get the 8 corners of the local bounds
+		Vector3[] localCorners = new Vector3[8];
+		localCorners[0] = localBounds.min;
+		localCorners[1] = new Vector3(localBounds.min.x, localBounds.min.y, localBounds.max.z);
+		localCorners[2] = new Vector3(localBounds.min.x, localBounds.max.y, localBounds.min.z);
+		localCorners[3] = new Vector3(localBounds.max.x, localBounds.min.y, localBounds.min.z);
+		localCorners[4] = new Vector3(localBounds.min.x, localBounds.max.y, localBounds.max.z);
+		localCorners[5] = new Vector3(localBounds.max.x, localBounds.min.y, localBounds.max.z);
+		localCorners[6] = new Vector3(localBounds.max.x, localBounds.max.y, localBounds.min.z);
+		localCorners[7] = localBounds.max;
+
+		// Transform the corners to world space
+		for (int i = 0; i < 8; i++)
+		{
+			localCorners[i] = transform.TransformPoint(localCorners[i]);
+		}
+
+		// Create a new bounds that encapsulates these world space corners
+		Bounds worldBounds = new Bounds(localCorners[0], Vector3.zero);
+		for (int i = 1; i < 8; i++)
+		{
+			worldBounds.Encapsulate(localCorners[i]);
+		}
+
+		return worldBounds;
 	}
 }
