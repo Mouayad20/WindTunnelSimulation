@@ -3,18 +3,20 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor;
 
 public class Particle : AbstractObject
 {
-	public float radius;
+	public float radius = 0.01f;
 	public float lifespan;
 	public Color color;
 
-	/// new
-	private List<Vector3> pathHistory = new List<Vector3>();
+	private static Material airShaderMaterial;
+	// private Material fogMaterial;
 
 	/// new
-	private Material particleMaterial = new Material(Shader.Find("Custom/LineShader"));
+	private List<Vector3> pathHistory = new List<Vector3>();
+	// private GameObject sphereInstance;
 
 	public Particle(Vector3 location)
 	{
@@ -23,16 +25,29 @@ public class Particle : AbstractObject
 		this.velocity = new Vector3(UnityEngine.Random.Range(-0.05f, 0.05f), 0.05f, UnityEngine.Random.Range(-0.05f, 0.05f));
 		this.lifespan = 255;
 		this.location = location;
-		this.color = new Color(0f, 0f, 0f).WithAlpha(0.4f);
+		this.color = new Color(255f, 255f, 255f).WithAlpha(0.6f);
+		// this.fogMaterial = material;
 
-		/// new 
-		// Shader lineShader = Shader.Find("Custom/LineShader");
 
-		// if (lineShader == null)
-		// {
-		// 	Debug.LogError("Shader not found! Make sure the shader file is named correctly and placed in the project.");
-		// }
-		// this.particleMaterial = new Material(lineShader);
+		if (airShaderMaterial == null)
+		{
+			// Shader shader = Shader.Find("Custom/AirShader");
+			Shader shader = Shader.Find("Custom/FogShader");
+			if (shader != null)
+			{
+				airShaderMaterial = new Material(shader);
+			}
+		}
+
+		// sphereInstance = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+		// sphereInstance.transform.position = location;
+		// sphereInstance.transform.localScale = Vector3.one * radius * 2; // Adjust scale
+
+
+		// sphereInstance.GetComponent<Renderer>().material = airShaderMaterial;
+		// sphereInstance.GetComponent<Renderer>().material.color = this.color;
+
+
 
 	}
 
@@ -47,10 +62,9 @@ public class Particle : AbstractObject
 	{
 		// acceleration += force / mass;
 		// on malaz pc
-		//this.location += (new Vector3(-4.822f, model.transform.position.y + 0.5f, UnityEngine.Random.Range(-2f, 2f)) - this.location).normalized * 0.03f;
+		Vector3 modelLocation = model.transform.position;
+		this.location += (new Vector3(-4.822f, UnityEngine.Random.Range(modelLocation.y + 0.5f - 1.5f, modelLocation.y + 0.5f + 1.5f), UnityEngine.Random.Range(-2f, 2f)) - this.location).normalized * 0.05f;
 
-		// on others
-		this.location += (new Vector3(-4.822f, model.transform.position.y, UnityEngine.Random.Range(-2f, 2f)) - this.location).normalized * 0.03f;
 		pathHistory.Add(this.location);
 		if (pathHistory.Count > 50) // Limit the history size
 		{
@@ -83,11 +97,6 @@ public class Particle : AbstractObject
 
 			if (s >= 0 && t >= 0 && (s + t) <= 1) // -> inside the triangle
 			{
-				// Vector3 locationWithRadius = new Vector3(
-				// 	this.location.x + Parameters.particleRedius,
-				// 	this.location.y + Parameters.particleRedius,
-				// 	this.location.z + Parameters.particleRedius
-				// );
 				float distance = Vector3.Distance(this.location, q);
 				if (distance <= 0.1f)
 				{
@@ -106,6 +115,10 @@ public class Particle : AbstractObject
 	public void ChangeColor(Color color)
 	{
 		this.color = color;
+		// if (sphereInstance != null)
+		// {
+		// 	sphereInstance.GetComponent<Renderer>().material.color = color;
+		// }
 	}
 
 	public void MoveRandomly()
@@ -142,15 +155,19 @@ public class Particle : AbstractObject
 	{
 		// if (this.lifespan <= 0)
 		if (this.location.x <= -4.822f)
+		{
+			// GameObject.Destroy(sphereInstance); // Destroy sphere instance
+
 			return true;
-		else
-			return false;
+		}
+		return false;
 	}
 
+	///////////// old draw ///////////
 	public void Draw()
 	{
-		// Gizmos.color = this.color;
-		// Gizmos.DrawSphere(this.location, Parameters.particleRedius);
+		Gizmos.color = this.color;
+		Gizmos.DrawSphere(this.location, Parameters.particleRedius);
 
 		/// new 
 		for (int i = 0; i < pathHistory.Count - 1; i++)
@@ -160,8 +177,39 @@ public class Particle : AbstractObject
 		}
 	}
 
+	//////////////// draw with air shader ////////////////
+
+	// public void Draw()
+	// {
+	// 	// fogMaterial.SetColor("_Color", this.color);
+	// 	// fogMaterial.SetPass(0);
+
+	// 	// Graphics.DrawMeshNow(MeshUtils.CreateSphere(Parameters.particleRedius, 16, 16), Matrix4x4.TRS(this.location, Quaternion.identity, Vector3.one));
+	// }
+
+
+	// public void Draw()
+	// {
+
+	// 	// sphereInstance.transform.position = location;
+	// 	for (int i = 0; i < pathHistory.Count - 1; i++)
+	// 	{
+	// 		Gizmos.color = new Color(200f, 200f, 200f).WithAlpha(0.4f);
+	// 		Gizmos.DrawLine(pathHistory[i], pathHistory[i + 1]);
+	// 	}
+
+	// 	// airShaderMaterial.SetColor("_Color", Color.blue);
+	// 	// airShaderMaterial.SetPass(0);
+	// 	// Mesh sphereMesh = MeshUtils.CreateSphere(radius, 16, 16); // Create sphere mesh dynamically
+	// 	// Graphics.DrawMeshNow(sphereMesh, Matrix4x4.TRS(this.location, Quaternion.identity, Vector3.one));
+	// }
+
+
 	public Bounds getRejoinAround()
 	{
 		return new Bounds(this.location, new Vector3(0.5f, 0.5f, 0.5f));
 	}
+
+
+
 }

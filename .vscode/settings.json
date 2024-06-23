@@ -54,5 +54,6 @@
     },
     "cSpell.words": [
         "Octree"
-    ]
+    ],
+    "dotnet.preferCSharpExtension": true
 }

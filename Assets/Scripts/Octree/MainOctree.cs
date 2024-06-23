@@ -33,9 +33,9 @@ public class MainOctree : MonoBehaviour
 		model = GameObject.Find("Car");
 
 		// for malaz pc
-		// Parameters.carCenter = new Vector3(model.transform.position.x, model.transform.position.y + 0.5f, model.transform.position.z);
+		Parameters.carCenter = new Vector3(model.transform.position.x, model.transform.position.y + 0.5f, model.transform.position.z);
 
-		Parameters.carCenter = new Vector3(model.transform.position.x, model.transform.position.y, model.transform.position.z);
+		// Parameters.carCenter = new Vector3(model.transform.position.x, model.transform.position.y, model.transform.position.z);
 
 		region = new Bounds(Parameters.carCenter, new Vector3(Parameters.carWidth, Parameters.carHeight, Parameters.carDepth));
 		boundary = new Bounds(Parameters.octreeCenter, new Vector3(Parameters.octreeWidth, Parameters.octreeHeight, Parameters.octreeDepth));
@@ -99,8 +99,8 @@ public class MainOctree : MonoBehaviour
 			showShapes = !showShapes;
 		}
 
-		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
-		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
+		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 0.5f), UnityEngine.Random.Range(-0.5f, 0f))));
+		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 0.5f), UnityEngine.Random.Range(-0.5f, 0f))));
 
 		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
 		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
@@ -108,8 +108,8 @@ public class MainOctree : MonoBehaviour
 		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
 		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
 
-		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
-		particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
+		// particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
+		// particles.Add(new Particle(new Vector3(Parameters.octreeWidth / 2, UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(-0.5f, 0.5f))));
 
 
 
@@ -164,9 +164,19 @@ public class MainOctree : MonoBehaviour
 	{
 		if (Application.isPlaying)
 		{
+			// if (particles.Count != 0)
+			// {
+			// 	for (int i = 1; i <= particles.Count; i++)
+			// 	{
+			// 		if (i != particles.Count && Vector3.Distance(particles[i].GetLocation(), particles[i + 1].GetLocation()) <= 0.5)
+			// 		{
+			// 			Gizmos.DrawLine(particles[i].GetLocation(), particles[i + 1].GetLocation());
+			// 		}
+			// 	}
+			// }
+
 			foreach (Particle particle in inRegionParticels)
 			{
-
 
 				particle.color = Color.red;
 

@@ -14,5 +14,5 @@ public class Parameters
     public const float carHeight = 1f;
     public const float carDepth = 1f;
     public static Vector3 carCenter = new Vector3(0f, 0.5f, 0f);
-    public const float particleRedius = 0.05f;
+    public const float particleRedius = 0.03f;
 }
