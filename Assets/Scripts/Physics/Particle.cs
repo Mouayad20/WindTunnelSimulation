@@ -47,7 +47,7 @@ public class Particle : AbstractObject
 	{
 		// acceleration += force / mass;
 		// on malaz pc
-		this.location += (new Vector3(-4.822f, model.transform.position.y + 0.5f, UnityEngine.Random.Range(-2f, 2f)) - this.location).normalized * 0.03f;
+		this.location += (new Vector3(-1*(Parameters.octreeWidth/2), Parameters.octreeCenter.y/2, Parameters.octreeCenter.z) - this.location).normalized * 0.03f;
 
 		// on others
 		// this.location += (new Vector3(-4.822f, model.transform.position.y, UnityEngine.Random.Range(-2f, 2f)) - this.location).normalized * 0.03f;

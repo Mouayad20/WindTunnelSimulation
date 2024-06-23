@@ -103,7 +103,7 @@ public class MainOctree : MonoBehaviour
 
 			octree.Insert(particles[i]);
 
-			if (particles[i].color == Color.red)
+			if (particles[i].GetLocation().x < UnityEngine.Random.Range(-2f, 2f)  )
 			{
 				// particles[i].Move();
 				particles[i].MoveToLastPoint(model);
