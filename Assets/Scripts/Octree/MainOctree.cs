@@ -22,6 +22,7 @@ public class MainOctree : MonoBehaviour
 	private float refreshRate = 0.5f;
 	private Bounds boundary;
 	private bool showShapes = false;
+	private bool MoveToLastPointFlag = false;
 
 	GameObject model;
 
@@ -107,14 +108,14 @@ public class MainOctree : MonoBehaviour
 		for (int i = 0; i < particles.Count; i++)
 		{
 			octree.Insert(particles[i]);
-			// if (particles[i].color == Color.red || particles[i].GetLocation().x <= 0)
-			// {
-			// 	// particles[i].MoveToLastPoint(model);
-			// }
-			// else
-			// {
-			particles[i].Move();
-			// }
+			if ((particles[i].color == Color.red || particles[i].GetLocation().x <= 0) && MoveToLastPointFlag)
+			{
+				particles[i].MoveToLastPoint(model);
+			}
+			else
+			{
+				particles[i].Move();
+			}
 
 			if (region.Contains(particles[i].GetLocation()))
 			{
@@ -137,7 +138,7 @@ public class MainOctree : MonoBehaviour
 		}
 	}
 
-	void OnDrawGizmos()
+	void OnRenderObject()
 	{
 		if (Application.isPlaying)
 		{
@@ -152,13 +153,49 @@ public class MainOctree : MonoBehaviour
 			}
 			if (showShapes)
 			{
-				Gizmos.color = new Color(1, 0, 0);
-				Gizmos.DrawWireCube(region.center, region.size);
+				DrawWireCube(region.center, region.size);
 				carOctree.Draw();
 				octree.Draw();
 			}
 
 		}
+	}
+
+	public static void DrawWireCube(Vector3 center, Vector3 size)
+	{
+		GL.PushMatrix();
+		GL.Begin(GL.LINES);
+		GL.Color(new Color(0, 1, 0));
+
+		Vector3 halfSize = size * 0.5f;
+
+		Vector3[] corners = new Vector3[8]
+		{
+		center + new Vector3(-halfSize.x, -halfSize.y, -halfSize.z),
+		center + new Vector3(halfSize.x, -halfSize.y, -halfSize.z),
+		center + new Vector3(halfSize.x, halfSize.y, -halfSize.z),
+		center + new Vector3(-halfSize.x, halfSize.y, -halfSize.z),
+		center + new Vector3(-halfSize.x, -halfSize.y, halfSize.z),
+		center + new Vector3(halfSize.x, -halfSize.y, halfSize.z),
+		center + new Vector3(halfSize.x, halfSize.y, halfSize.z),
+		center + new Vector3(-halfSize.x, halfSize.y, halfSize.z)
+		};
+
+		int[] indices = new int[]
+		{
+		0, 1, 1, 2, 2, 3, 3, 0, // Bottom
+		4, 5, 5, 6, 6, 7, 7, 4, // Top
+		0, 4, 1, 5, 2, 6, 3, 7  // Sides
+		};
+
+		for (int i = 0; i < indices.Length; i += 2)
+		{
+			GL.Vertex(corners[indices[i]]);
+			GL.Vertex(corners[indices[i + 1]]);
+		}
+
+		GL.End();
+		GL.PopMatrix();
 	}
 
 	void PrintFrameRate()
@@ -174,10 +211,8 @@ public class MainOctree : MonoBehaviour
 
 	private Bounds TransformBounds(Transform transform, Bounds localBounds)
 	{
-		// Transform the center to world space
 		Vector3 center = transform.TransformPoint(localBounds.center);
 
-		// Get the 8 corners of the local bounds
 		Vector3[] localCorners = new Vector3[8];
 		localCorners[0] = localBounds.min;
 		localCorners[1] = new Vector3(localBounds.min.x, localBounds.min.y, localBounds.max.z);
@@ -188,13 +223,11 @@ public class MainOctree : MonoBehaviour
 		localCorners[6] = new Vector3(localBounds.max.x, localBounds.max.y, localBounds.min.z);
 		localCorners[7] = localBounds.max;
 
-		// Transform the corners to world space
 		for (int i = 0; i < 8; i++)
 		{
 			localCorners[i] = transform.TransformPoint(localCorners[i]);
 		}
 
-		// Create a new bounds that encapsulates these world space corners
 		Bounds worldBounds = new Bounds(localCorners[0], Vector3.zero);
 		for (int i = 1; i < 8; i++)
 		{
@@ -214,6 +247,11 @@ public class MainOctree : MonoBehaviour
 		if (Input.GetKeyDown(KeyCode.D))
 		{
 			Parameters.withDeformation = !Parameters.withDeformation;
+		}
+		
+		if (Input.GetKeyDown(KeyCode.A))
+		{
+			MoveToLastPointFlag = !MoveToLastPointFlag;
 		}
 
 		if (Input.GetKeyDown(KeyCode.S))

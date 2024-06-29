@@ -126,20 +126,50 @@ public class Particle : AbstractObject
 	{
 		if (!Parameters.applyShader)
 		{
-			Gizmos.color = this.color;
-			Gizmos.DrawSphere(this.location, Parameters.particleRedius);
+			GL.PushMatrix();
+			GL.Begin(GL.LINES);
+			GL.Color(this.color);
 
+			// Draw the sphere
+			DrawSphere(this.location, Parameters.particleRadius);
+
+			GL.End();
+			GL.PopMatrix();
 		}
 		else
 		{
+			GL.PushMatrix();
+			GL.Begin(GL.LINES);
+			GL.Color(this.color);
+
+			// Draw the path history
 			for (int i = 0; i < pathHistory.Count - 1; i++)
 			{
-				Gizmos.color = this.color;
-				Gizmos.DrawLine(pathHistory[i], pathHistory[i + 1]);
+				GL.Vertex(pathHistory[i]);
+				GL.Vertex(pathHistory[i + 1]);
 			}
-		}
 
+			GL.End();
+			GL.PopMatrix();
+		}
 	}
+
+	void DrawSphere(Vector3 center, float radius)
+	{
+		int segments = 24; // Adjust for detail
+		for (int i = 0; i < segments; i++)
+		{
+			float theta = (i * 2.0f * Mathf.PI) / segments;
+			float nextTheta = ((i + 1) * 2.0f * Mathf.PI) / segments;
+
+			Vector3 p1 = center + new Vector3(radius * Mathf.Cos(theta), radius * Mathf.Sin(theta), 0);
+			Vector3 p2 = center + new Vector3(radius * Mathf.Cos(nextTheta), radius * Mathf.Sin(nextTheta), 0);
+
+			GL.Vertex(p1);
+			GL.Vertex(p2);
+		}
+	}
+
 
 	public Bounds getRejoinAround()
 	{

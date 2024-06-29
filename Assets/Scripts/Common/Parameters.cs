@@ -8,8 +8,8 @@ public class Parameters
     public static bool withDeformation = false;
     public static bool applyShader = false;
     public static bool printFrameRate = false;
-    public const float particleRedius = 0.05f;
-    public static Color initialParticleColor = new Color(200f, 200f, 200f).WithAlpha(0.6f);
+    public const float particleRadius = 0.05f;
+    public static Color initialParticleColor = new Color(200f, 200f, 200f);
     public static float particlesVelocity = 1;
     public const int octreeCapacity = 20;
     public const int carOctreeCapacity = 50;
